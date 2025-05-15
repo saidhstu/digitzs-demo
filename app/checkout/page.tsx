@@ -2,6 +2,13 @@
 import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+};
+
 
 // Product SVG Components
 const ProductIllustrations = {
@@ -133,7 +140,7 @@ const products = [
 ];
 
 // Helper function to get product illustration based on name
-const getProductIllustration = (name) => {
+const getProductIllustration = (name: string) => {
   if (name.includes('T-Shirt')) return <ProductIllustrations.TShirt />;
   if (name.includes('Jeans')) return <ProductIllustrations.Jeans />;
   if (name.includes('Shoes')) return <ProductIllustrations.Shoes />;
@@ -149,7 +156,7 @@ export default function Checkout() {
   
   // In a real app, you'd get this from localStorage, context, or URL params
   // For now, we'll check localStorage
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   
   // Calculate totals
   const totalPrice = selectedProducts.reduce((sum, product) => sum + product.price, 0);
@@ -181,7 +188,7 @@ export default function Checkout() {
     if (cartItems) {
       setSelectedProducts(JSON.parse(cartItems));
     }
-  }, []);
+  }, );
   
   if (orderPlaced) {
     return (
