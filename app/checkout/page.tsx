@@ -99,45 +99,6 @@ const ProductIllustrations = {
   )
 };
 
-// Sample product data
-const products = [
-  {
-    id: 1,
-    name: 'Classic T-Shirt',
-    price: 24.99,
-    description: 'Comfortable cotton t-shirt for everyday wear'
-  },
-  {
-    id: 2,
-    name: 'Denim Jeans',
-    price: 49.99,
-    description: 'High-quality denim jeans with perfect fit'
-  },
-  {
-    id: 3,
-    name: 'Running Shoes',
-    price: 89.99,
-    description: 'Lightweight shoes ideal for jogging and running'
-  },
-  {
-    id: 4,
-    name: 'Leather Wallet',
-    price: 34.99,
-    description: 'Genuine leather wallet with multiple card slots'
-  },
-  {
-    id: 5,
-    name: 'Wireless Headphones',
-    price: 129.99,
-    description: 'Noise-cancelling wireless headphones with long battery life'
-  },
-  {
-    id: 6,
-    name: 'Smart Watch',
-    price: 199.99,
-    description: 'Fitness tracker with heart rate monitor and notifications'
-  }
-];
 
 // Helper function to get product illustration based on name
 const getProductIllustration = (name: string) => {

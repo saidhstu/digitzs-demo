@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { ShoppingCart, ChevronLeft } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Product = {

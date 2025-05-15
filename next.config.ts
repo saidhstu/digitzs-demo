@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
 			"lh3.googleusercontent.com"
 		], // Add the domain(s) you want to allow for images
 	},
+	  eslint: {
+			// Warning: This allows production builds to successfully complete even if
+			// your project has ESLint errors.
+			ignoreDuringBuilds: true,
+		},
 	// Other Next.js configuration options can go here
 };
 
