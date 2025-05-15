@@ -3,6 +3,26 @@ import { useState, useEffect } from 'react';
 import { ShoppingCart, ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+};
+
+type ProductCardProps = {
+  product: Product;
+  isSelected: boolean;
+  onToggleSelect: (product: Product) => void;
+};
+
+type CartSummaryProps = {
+  selectedProducts: Product[];
+  onCheckout: () => void;
+  onClearCart: () => void;
+};
+
+
 // Product SVG Components
 const ProductIllustrations = {
   // T-Shirt SVG
@@ -133,7 +153,7 @@ const products = [
 ];
 
 // Helper function to get product illustration based on name
-const getProductIllustration = (name) => {
+const getProductIllustration = (name: string) => {
   if (name.includes('T-Shirt')) return <ProductIllustrations.TShirt />;
   if (name.includes('Jeans')) return <ProductIllustrations.Jeans />;
   if (name.includes('Shoes')) return <ProductIllustrations.Shoes />;
@@ -144,7 +164,8 @@ const getProductIllustration = (name) => {
 };
 
 // Product Card Component
-const ProductCard = ({ product, isSelected, onToggleSelect }) => {
+const ProductCard = ({ product, isSelected, onToggleSelect }: ProductCardProps) => {
+
   return (
     <div className={`border rounded-lg overflow-hidden shadow-md transition-all ${isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}>
       <div className="w-full h-48 bg-gray-100">
@@ -168,7 +189,8 @@ const ProductCard = ({ product, isSelected, onToggleSelect }) => {
 };
 
 // Cart Summary Component
-const CartSummary = ({ selectedProducts, onCheckout, onClearCart }) => {
+const CartSummary = ({ selectedProducts, onCheckout, onClearCart }: CartSummaryProps) => {
+
   const totalItems = selectedProducts.length;
   const totalPrice = selectedProducts.reduce((sum, product) => sum + product.price, 0);
   
@@ -204,7 +226,7 @@ const CartSummary = ({ selectedProducts, onCheckout, onClearCart }) => {
 // Main Store Component for Home Page
 export default function Home() {
   const router = useRouter();
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   
   // Load cart items from localStorage on initial render
   useEffect(() => {
@@ -223,14 +245,14 @@ export default function Home() {
     }
   }, [selectedProducts]);
   
-  const handleToggleSelect = (product) => {
-    if (selectedProducts.find(p => p.id === product.id)) {
-      setSelectedProducts(selectedProducts.filter(p => p.id !== product.id));
-    } else {
-      setSelectedProducts([...selectedProducts, product]);
-    }
-  };
-  
+const handleToggleSelect = (product: Product) => {
+  if (selectedProducts.find(p => p.id === product.id)) {
+    setSelectedProducts(selectedProducts.filter(p => p.id !== product.id));
+  } else {
+    setSelectedProducts([...selectedProducts, product]);
+  }
+};
+
   const handleCheckout = () => {
     if (selectedProducts.length > 0) {
       // Navigate to the checkout page with the explicit URL
