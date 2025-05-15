@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+    { "source": "/login/:path*", "destination": "https://app.etudify.ai/login/:path*" },
+    { "source": "/signup/:path*", "destination": "https://app.etudify.ai/signup/:path*" },
+    { "source": "/checkout/:path*", "destination": "https://app.etudify.ai/checkout/:path*" },
+    { "source": "/dashboard/:path*", "destination": "https://app.etudify.ai/dashboard/:path*" }
+    ]
+}

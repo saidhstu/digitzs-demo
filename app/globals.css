@@ -1,0 +1,22 @@
+@import "tailwindcss";
+/* app/globals.css or styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#phoneNumber:focus {
+  outline: none;
+}
+
+.bg-blue-600{
+  background-color: rgb(32, 180, 131);
+}
+
+.bg-gray-200{
+   background-color: rgb(189, 181, 181)
+}
