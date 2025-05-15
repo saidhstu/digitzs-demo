@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 type Product = {
-  id: string;
+  id: number;
   name: string;
   description: string;
   price: number;
