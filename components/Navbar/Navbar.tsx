@@ -1,5 +1,4 @@
 "use server";
-import { getServerSession } from "@/lib/supabase/server";
 import Logo from "@/public/logo";
 import { Chrome } from "lucide-react";
 import Link from "next/link";
@@ -13,22 +12,8 @@ const navItems = [
 ];
 
 const Navbar = async () => {
-	const { data } = await getServerSession();
 
 	// CTA buttons array
-	const ctaButtons = data?.user
-		? [
-				{ label: "Dashboard", href: "/dashboard/subscription", isButton: true },
-				{
-					label: "Se déconnecter.",
-					href: "/logout",
-					isButton: false,
-				},
-		  ]
-		: [
-				{ label: "Commencer", href: "#", isButton: true },
-				{ label: "Se connecter", href: "/login", isButton: false },
-		  ];
 
 	return (
 		<nav className="w-full bg-white shadow-soft border-b border-gray-200">
@@ -55,23 +40,6 @@ const Navbar = async () => {
 					)}
 				</div>
 
-				{/* CTA Buttons - Right */}
-				<div className="flex items-center space-x-4">
-					{ctaButtons.map(({ label, href, isButton }) => (
-						<Link
-							key={href}
-							href={href}
-							className={`
-                                ${
-									isButton
-										? "bg-primary text-gray-700 px-6 py-2 rounded-md font-medium transition duration-200 bg-blue-200"
-										: "px-6 py-2 rounded-md font-medium transition duration-200 hover:bg-gray-200 hover:text-primary"
-								}
-                            `}>
-							{label}
-						</Link>
-					))}
-				</div>
 			</div>
 		</nav>
 	);
