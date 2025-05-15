@@ -1,14 +1,24 @@
 "use client";
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
 type Product = {
-  id: string;
+  id: string | number;
   name: string;
   description: string;
   price: number;
 };
 
+type ShippingInfo = {
+  firstName: string;
+  lastName: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  email: string;
+  mobileNumber: string;
+};
 
 // Product SVG Components
 const ProductIllustrations = {
@@ -153,42 +163,117 @@ const getProductIllustration = (name: string) => {
 export default function Checkout() {
   const router = useRouter();
   const [orderPlaced, setOrderPlaced] = useState(false);
-  
-  // In a real app, you'd get this from localStorage, context, or URL params
-  // For now, we'll check localStorage
+  const [showPaymentIframe, setShowPaymentIframe] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    zipCode: '',
+    email: '',
+    mobileNumber: ''
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   
   // Calculate totals
   const totalPrice = selectedProducts.reduce((sum, product) => sum + product.price, 0);
   const tax = totalPrice * 0.08;
   const totalWithTax = totalPrice + tax;
+  const amountInCents = Math.round(totalWithTax * 100);
   
   const handleBackToShopping = () => {
-    // Navigate back to the home page with explicit URL
     router.push('/');
   };
 
-  const handleCompleteOrder = () => {
-    setOrderPlaced(true);
-    // In a real app, you'd send the order to a backend here
-    // Then clear the cart in localStorage
-    localStorage.removeItem('cartItems');
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
     
-    // After a successful order, you could redirect to a confirmation page
-    // or show a confirmation message
+    if (!shippingInfo.firstName) errors.firstName = "First name is required";
+    if (!shippingInfo.lastName) errors.lastName = "Last name is required";
+    if (!shippingInfo.address) errors.address = "Address is required";
+    if (!shippingInfo.city) errors.city = "City is required";
+    if (!shippingInfo.zipCode) errors.zipCode = "Zip code is required";
+    if (!shippingInfo.email) errors.email = "Email is required";
+    if (!shippingInfo.mobileNumber) errors.mobileNumber = "Mobile number is required";
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleCompleteOrder = () => {
+    if (!validateForm()) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    
+    // Create order payload for Digitzs
+    const orderPayload = {
+      orderId: `order-${Date.now()}`,
+      orderItems: selectedProducts.map(product => ({
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        sku: `SKU-${product.id}`
+      })),
+      customer: {
+        firstName: shippingInfo.firstName,
+        lastName: shippingInfo.lastName,
+        email: shippingInfo.email,
+        phone: shippingInfo.mobileNumber
+      },
+      shipping: {
+        address: shippingInfo.address,
+        city: shippingInfo.city,
+        zipCode: shippingInfo.zipCode
+      },
+      amount: amountInCents + 999 // Adding processing fee
+    };
+    
+    // Show payment iframe
+    setShowPaymentIframe(true);
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setShippingInfo(prev => ({ ...prev, [name]: value }));
+    // Clear error when user types
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+  
+  const handlePaymentSuccess = () => {
+    setOrderPlaced(true);
+    localStorage.removeItem('cartItems');
     setTimeout(() => {
       router.push('/');
     }, 3000);
   };
   
   // Load cart items from localStorage when component mounts
-  useState(() => {
-    // We need to use this pattern because localStorage is not available during SSR
+  useEffect(() => {
     const cartItems = typeof window !== 'undefined' ? localStorage.getItem('cartItems') : null;
     if (cartItems) {
       setSelectedProducts(JSON.parse(cartItems));
     }
-  }, );
+  }, []);
+  
+  // Generate Digitzs payment URL
+  const getDigitzsPaymentUrl = () => {
+    const orderPayload = {
+      orderId: `order-${Date.now()}`,
+      orderItems: selectedProducts.map(product => ({
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        sku: `SKU-${product.id}`
+      })),
+      totalAmount: amountInCents + 999 // Adding processing fee
+    };
+    
+    return `https://checkout.staging.digitzs.com/content-delivery/hppgdigitzs-paolomercha-718643500-3230807-1732171363.html?styles=%7B%22backgroundColor%22%3A%22%23ffffff%22%2C%22inputColor%22%3A%22%23f9fafb%22%2C%22inputBorderColor%22%3A%22%23e5e7eb%22%2C%22inputBorderWidth%22%3A%221%22%2C%22buttonColor%22%3A%22%233b82f6%22%2C%22buttonTextColor%22%3A%22%23ffffff%22%2C%22buttonBorderColor%22%3A%22%233b82f6%22%2C%22buttonBorderWidth%22%3A%221%22%2C%22fontSize%22%3A%2214%22%2C%22fontStyle%22%3A%22inherit%22%2C%22labelFontSize%22%3A%2214%22%2C%22labelFontStyle%22%3A%22inherit%22%2C%22buttonFontSize%22%3A%2214%22%2C%22buttonFontStyle%22%3A%22inherit%22%2C%22borderRadius%22%3A%226%22%2C%22buttonBorderRadius%22%3A%226%22%7D&isEmailEnabled=true&isZipCodeEnabled=true&feeMode=absorbed&orderPayload=${encodeURIComponent(JSON.stringify(orderPayload))}&email=${encodeURIComponent(shippingInfo.email)}&mobileNumber=${encodeURIComponent(shippingInfo.mobileNumber)}&zipCode=${encodeURIComponent(shippingInfo.zipCode)}&amount=${amountInCents + 999}`;
+  };
   
   if (orderPlaced) {
     return (
@@ -220,6 +305,39 @@ export default function Checkout() {
             <ChevronLeft size={20} />
             Back to Shopping
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showPaymentIframe) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="flex items-center mb-6">
+          <button 
+            onClick={() => setShowPaymentIframe(false)}
+            className="flex items-center text-blue-600 hover:text-blue-800"
+          >
+            <ChevronLeft size={20} />
+            Back to checkout
+          </button>
+          <h1 className="text-2xl font-bold ml-6">Payment</h1>
+        </div>
+        
+        <div className="bg-white p-4 rounded-lg shadow">
+          <iframe 
+            src={getDigitzsPaymentUrl()}
+            className="w-full h-[600px] border-0"
+            title="Payment Gateway"
+            onLoad={() => {
+              // Add event listener for payment success message from iframe
+              window.addEventListener('message', (event) => {
+                if (event.data === 'payment_success') {
+                  handlePaymentSuccess();
+                }
+              });
+            }}
+          />
         </div>
       </div>
     );
@@ -259,11 +377,83 @@ export default function Checkout() {
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-semibold mb-4">Shipping Information</h2>
             <div className="grid grid-cols-2 gap-4">
-              <input type="text" placeholder="First Name" className="border p-2 rounded" />
-              <input type="text" placeholder="Last Name" className="border p-2 rounded" />
-              <input type="text" placeholder="Address" className="border p-2 rounded col-span-2" />
-              <input type="text" placeholder="City" className="border p-2 rounded" />
-              <input type="text" placeholder="Postal Code" className="border p-2 rounded" />
+              <div>
+                <input 
+                  type="text" 
+                  name="firstName"
+                  placeholder="First Name" 
+                  className={`border p-2 rounded w-full ${formErrors.firstName ? 'border-red-500' : ''}`}
+                  value={shippingInfo.firstName}
+                  onChange={handleInputChange}
+                />
+                {formErrors.firstName && <p className="text-red-500 text-xs mt-1">{formErrors.firstName}</p>}
+              </div>
+              <div>
+                <input 
+                  type="text" 
+                  name="lastName"
+                  placeholder="Last Name" 
+                  className={`border p-2 rounded w-full ${formErrors.lastName ? 'border-red-500' : ''}`}
+                  value={shippingInfo.lastName}
+                  onChange={handleInputChange}
+                />
+                {formErrors.lastName && <p className="text-red-500 text-xs mt-1">{formErrors.lastName}</p>}
+              </div>
+              <div className="col-span-2">
+                <input 
+                  type="text" 
+                  name="address"
+                  placeholder="Address" 
+                  className={`border p-2 rounded w-full ${formErrors.address ? 'border-red-500' : ''}`}
+                  value={shippingInfo.address}
+                  onChange={handleInputChange}
+                />
+                {formErrors.address && <p className="text-red-500 text-xs mt-1">{formErrors.address}</p>}
+              </div>
+              <div>
+                <input 
+                  type="text" 
+                  name="city"
+                  placeholder="City" 
+                  className={`border p-2 rounded w-full ${formErrors.city ? 'border-red-500' : ''}`}
+                  value={shippingInfo.city}
+                  onChange={handleInputChange}
+                />
+                {formErrors.city && <p className="text-red-500 text-xs mt-1">{formErrors.city}</p>}
+              </div>
+              <div>
+                <input 
+                  type="text" 
+                  name="zipCode"
+                  placeholder="Postal Code" 
+                  className={`border p-2 rounded w-full ${formErrors.zipCode ? 'border-red-500' : ''}`}
+                  value={shippingInfo.zipCode}
+                  onChange={handleInputChange}
+                />
+                {formErrors.zipCode && <p className="text-red-500 text-xs mt-1">{formErrors.zipCode}</p>}
+              </div>
+              <div>
+                <input 
+                  type="email" 
+                  name="email"
+                  placeholder="Email" 
+                  className={`border p-2 rounded w-full ${formErrors.email ? 'border-red-500' : ''}`}
+                  value={shippingInfo.email}
+                  onChange={handleInputChange}
+                />
+                {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
+              </div>
+              <div>
+                <input 
+                  type="tel" 
+                  name="mobileNumber"
+                  placeholder="Mobile Number" 
+                  className={`border p-2 rounded w-full ${formErrors.mobileNumber ? 'border-red-500' : ''}`}
+                  value={shippingInfo.mobileNumber}
+                  onChange={handleInputChange}
+                />
+                {formErrors.mobileNumber && <p className="text-red-500 text-xs mt-1">{formErrors.mobileNumber}</p>}
+              </div>
             </div>
           </div>
         </div>
@@ -284,11 +474,15 @@ export default function Checkout() {
                 <span>Tax</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
+              <div className="flex justify-between">
+                <span>Processing Fee</span>
+                <span>$9.99</span>
+              </div>
             </div>
             <div className="border-t pt-2">
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${totalWithTax.toFixed(2)}</span>
+                <span>${(totalWithTax + 9.99).toFixed(2)}</span>
               </div>
             </div>
             <button 
