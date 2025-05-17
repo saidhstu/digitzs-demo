@@ -233,7 +233,8 @@ export default function Checkout() {
       totalAmount: amountInCents + 999 // Adding processing fee
     };
     
-    return `https://checkout.staging.digitzs.com/content-delivery/hppgdigitzs-paolomercha-718643500-3230807-1732171363.html?styles=%7B%22backgroundColor%22%3A%22%23ffffff%22%2C%22inputColor%22%3A%22%23f9fafb%22%2C%22inputBorderColor%22%3A%22%23e5e7eb%22%2C%22inputBorderWidth%22%3A%221%22%2C%22buttonColor%22%3A%22%233b82f6%22%2C%22buttonTextColor%22%3A%22%23ffffff%22%2C%22buttonBorderColor%22%3A%22%233b82f6%22%2C%22buttonBorderWidth%22%3A%221%22%2C%22fontSize%22%3A%2214%22%2C%22fontStyle%22%3A%22inherit%22%2C%22labelFontSize%22%3A%2214%22%2C%22labelFontStyle%22%3A%22inherit%22%2C%22buttonFontSize%22%3A%2214%22%2C%22buttonFontStyle%22%3A%22inherit%22%2C%22borderRadius%22%3A%226%22%2C%22buttonBorderRadius%22%3A%226%22%7D&isEmailEnabled=true&isZipCodeEnabled=true&feeMode=absorbed&orderPayload=${encodeURIComponent(JSON.stringify(orderPayload))}&email=${encodeURIComponent(shippingInfo.email)}&mobileNumber=${encodeURIComponent(shippingInfo.mobileNumber)}&zipCode=${encodeURIComponent(shippingInfo.zipCode)}&amount=${amountInCents + 999}`;
+
+    return `https://digitz-iq-ui-iframe-content.s3.us-west-2.amazonaws.com/content-delivery/hppgdigitzs-deetstest8-33603839-4442554-1728056381.html?styles=%257B%2522backgroundColor%2522%253A%2522%2523ffffff%2522%252C%2522inputColor%2522%253A%2522%2523f9fafb%2522%252C%2522inputBorderColor%2522%253A%2522%2523e5e7eb%2522%252C%2522inputBorderWidth%2522%253A%25221%2522%252C%2522buttonColor%2522%253A%2522%25233b82f6%2522%252C%2522buttonTextColor%2522%253A%2522%2523ffffff%2522%252C%2522buttonBorderColor%2522%253A%2522%25233b82f6%2522%252C%2522buttonBorderWidth%2522%253A%25221%2522%252C%2522fontSize%2522%253A%252214%2522%252C%2522fontStyle%2522%253A%2522inherit%2522%252C%2522labelFontSize%2522%253A%252214%2522%252C%2522labelFontStyle%2522%253A%2522inherit%2522%252C%2522buttonFontSize%2522%253A%252214%2522%252C%2522buttonFontStyle%2522%253A%2522inherit%2522%252C%2522borderRadius%2522%253A%25226%2522%252C%2522buttonBorderRadius%2522%253A%25226%2522%257D&isEmailEnabled=true&isZipCodeEnabled=true&feeMode=absorbed&orderPayload=${encodeURIComponent(JSON.stringify(orderPayload))}&email=${encodeURIComponent(shippingInfo.email)}&mobileNumber=${encodeURIComponent(shippingInfo.mobileNumber)}&zipCode=${encodeURIComponent(shippingInfo.zipCode)}&amount=${amountInCents + 999}`;
   };
   
   if (orderPlaced) {
@@ -433,17 +434,18 @@ export default function Checkout() {
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>$0</span>
               </div>
               <div className="flex justify-between">
                 <span>Processing Fee</span>
-                <span>$9.99</span>
+                <span>$0</span>
               </div>
             </div>
             <div className="border-t pt-2">
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${(totalWithTax + 9.99).toFixed(2)}</span>
+                {/* <span>${(totalWithTax + 9.99).toFixed(2)}</span> */}
+                <span>$1</span>
               </div>
             </div>
             <button 

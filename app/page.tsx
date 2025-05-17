@@ -117,13 +117,13 @@ const products = [
   {
     id: 1,
     name: 'Classic T-Shirt',
-    price: 24.99,
+    price: 1,
     description: 'Comfortable cotton t-shirt for everyday wear'
   },
   {
     id: 2,
     name: 'Denim Jeans',
-    price: 49.99,
+    price: 1,
     description: 'High-quality denim jeans with perfect fit'
   },
   {
