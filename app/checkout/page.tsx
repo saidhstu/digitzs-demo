@@ -221,22 +221,74 @@ export default function Checkout() {
   }, []);
   
   // Generate Digitzs payment URL
-  const getDigitzsPaymentUrl = () => {
-    const orderPayload = {
-      orderId: `order-${Date.now()}`,
-      orderItems: selectedProducts.map(product => ({
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        sku: `SKU-${product.id}`
-      })),
-      totalAmount: amountInCents + 999 // Adding processing fee
-    };
+  // const getDigitzsPaymentUrl = () => {
+  //   const orderPayload = {
+  //     orderId: `order-${Date.now()}`,
+  //     orderItems: selectedProducts.map(product => ({
+  //       name: product.name,
+  //       price: product.price,
+  //       quantity: 1,
+  //       sku: `SKU-${product.id}`
+  //     })),
+  //     totalAmount: amountInCents + 999 // Adding processing fee
+  //   };
     
 
-    return `https://digitz-iq-ui-iframe-content.s3.us-west-2.amazonaws.com/content-delivery/hppgdigitzs-deetstest8-33603839-4442554-1728056381.html?styles=%257B%2522backgroundColor%2522%253A%2522%2523ffffff%2522%252C%2522inputColor%2522%253A%2522%2523f9fafb%2522%252C%2522inputBorderColor%2522%253A%2522%2523e5e7eb%2522%252C%2522inputBorderWidth%2522%253A%25221%2522%252C%2522buttonColor%2522%253A%2522%25233b82f6%2522%252C%2522buttonTextColor%2522%253A%2522%2523ffffff%2522%252C%2522buttonBorderColor%2522%253A%2522%25233b82f6%2522%252C%2522buttonBorderWidth%2522%253A%25221%2522%252C%2522fontSize%2522%253A%252214%2522%252C%2522fontStyle%2522%253A%2522inherit%2522%252C%2522labelFontSize%2522%253A%252214%2522%252C%2522labelFontStyle%2522%253A%2522inherit%2522%252C%2522buttonFontSize%2522%253A%252214%2522%252C%2522buttonFontStyle%2522%253A%2522inherit%2522%252C%2522borderRadius%2522%253A%25226%2522%252C%2522buttonBorderRadius%2522%253A%25226%2522%257D&isEmailEnabled=true&isZipCodeEnabled=true&feeMode=absorbed&orderPayload=${encodeURIComponent(JSON.stringify(orderPayload))}&email=${encodeURIComponent(shippingInfo.email)}&mobileNumber=${encodeURIComponent(shippingInfo.mobileNumber)}&zipCode=${encodeURIComponent(shippingInfo.zipCode)}&amount=100`;
+  //   return `https://digitz-iq-ui-iframe-content.s3.us-west-2.amazonaws.com/content-delivery/hppgdigitzs-deetstest8-33603839-4442554-1728056381.html?styles=%257B%2522backgroundColor%2522%253A%2522%2523ffffff%2522%252C%2522inputColor%2522%253A%2522%2523f9fafb%2522%252C%2522inputBorderColor%2522%253A%2522%2523e5e7eb%2522%252C%2522inputBorderWidth%2522%253A%25221%2522%252C%2522buttonColor%2522%253A%2522%25233b82f6%2522%252C%2522buttonTextColor%2522%253A%2522%2523ffffff%2522%252C%2522buttonBorderColor%2522%253A%2522%25233b82f6%2522%252C%2522buttonBorderWidth%2522%253A%25221%2522%252C%2522fontSize%2522%253A%252214%2522%252C%2522fontStyle%2522%253A%2522inherit%2522%252C%2522labelFontSize%2522%253A%252214%2522%252C%2522labelFontStyle%2522%253A%2522inherit%2522%252C%2522buttonFontSize%2522%253A%252214%2522%252C%2522buttonFontStyle%2522%253A%2522inherit%2522%252C%2522borderRadius%2522%253A%25226%2522%252C%2522buttonBorderRadius%2522%253A%25226%2522%257D&isEmailEnabled=true&isZipCodeEnabled=true&feeMode=absorbed&orderPayload=${encodeURIComponent(JSON.stringify(orderPayload))}&email=${encodeURIComponent(shippingInfo.email)}&mobileNumber=${encodeURIComponent(shippingInfo.mobileNumber)}&zipCode=${encodeURIComponent(shippingInfo.zipCode)}&amount=100`;
+  // };
+  
+
+  // Generate Digitzs payment URL
+// Generate Digitzs payment URL
+const getDigitzsPaymentUrl = () => {
+  // Merchant credentials
+  const MERCHANT_ID = 'digitzs-deetstest8-33603839-4442554-1728056381';
+  const API_KEY = 'pOZnjKUSBk8pEhBoOAu0qzz6WpfqLxm3YmmZnDy2';
+  const APP_KEY = 'AK94lx3fPPIFZLhFU1pjI7YVnxvtg4Ln2za2BXOswuBIU3K3gDErj8JsWqd1AjdA';
+  // const MERCHANT_ID = 'digitzs-paolomercha-718643500-3230807-1732171363';
+  // const API_KEY = 'pOZnjKUSBk8pEhBoOAu0qzz6WpfqLxm3YmmZnDy2';
+  // const APP_KEY = 'HTxKp4jh1cSIprscR81zXt6EtsOup1wNf8HPNLr5vTNWMAUloj0i7yEhVmIxZrck';
+  
+  const orderPayload = {
+    orderId: `order-${Date.now()}`,
+    orderItems: selectedProducts.map(product => ({
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      sku: `SKU-${product.id}`
+    })),
+    totalAmount: 100 // Fixed $1.00 amount
   };
   
+  // Style settings for the payment form
+  const styles = {
+    backgroundColor: "#ffffff",
+    inputColor: "#f9fafb",
+    inputBorderColor: "#e5e7eb",
+    inputBorderWidth: "1",
+    buttonColor: "#3b82f6",
+    buttonTextColor: "#ffffff",
+    buttonBorderColor: "#3b82f6",
+    buttonBorderWidth: "1",
+    fontSize: "14",
+    fontStyle: "inherit",
+    labelFontSize: "14",
+    labelFontStyle: "inherit",
+    buttonFontSize: "14",
+    buttonFontStyle: "inherit",
+    borderRadius: "6",
+    buttonBorderRadius: "6"
+  };
+  
+  // Encode the styles object
+  const encodedStyles = encodeURIComponent(JSON.stringify(styles));
+  
+  // Construct URL with authentication parameters
+  return `https://checkout.staging.digitzs.com/payment?merchant_id=${MERCHANT_ID}&api_key=${API_KEY}&app_key=${APP_KEY}&styles=${encodedStyles}&isEmailEnabled=true&isZipCodeEnabled=true&feeMode=absorbed&orderPayload=${encodeURIComponent(JSON.stringify(orderPayload))}&email=${encodeURIComponent(shippingInfo.email)}&mobileNumber=${encodeURIComponent(shippingInfo.mobileNumber)}&zipCode=${encodeURIComponent(shippingInfo.zipCode)}&amount=100`;
+};
+
+
+
   if (orderPlaced) {
     return (
       <div className="max-w-4xl mx-auto p-6 flex flex-col items-center justify-center min-h-screen">
